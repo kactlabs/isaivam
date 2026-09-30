@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from isaivam.prompt.utils import get_all_strings, update_strings
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 # Type variables for generics
 InputModel = t.TypeVar("InputModel", bound=BaseModel)
@@ -41,7 +41,7 @@ class _TranslatedStrings(BaseModel):
 async def _translate_strings(
     strings: t.List[str],
     target_language: str,
-    llm: "InstructorBaseRagasLLM",
+    llm: "InstructorBaseIsaivamLLM",
 ) -> t.List[str]:
     """
     Translate strings while preserving order and count.
@@ -148,7 +148,7 @@ Output: """
     async def adapt(
         self,
         target_language: str,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         adapt_instruction: bool = False,
     ) -> "BasePrompt[InputModel, OutputModel]":
         """

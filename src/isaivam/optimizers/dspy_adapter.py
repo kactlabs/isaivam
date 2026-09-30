@@ -1,12 +1,12 @@
 import typing as t
 
 from isaivam.dataset_schema import SingleMetricAnnotation
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 from isaivam.losses import Loss
 from isaivam.prompt.pydantic_prompt import PydanticPrompt
 
 
-def setup_dspy_llm(dspy: t.Any, ragas_llm: BaseRagasLLM) -> None:
+def setup_dspy_llm(dspy: t.Any, isaivam_llm: BaseIsaivamLLM) -> None:
     """
     Configure DSPy to use Isaivam LLM.
 
@@ -14,12 +14,12 @@ def setup_dspy_llm(dspy: t.Any, ragas_llm: BaseRagasLLM) -> None:
     ----------
     dspy : Any
         The DSPy module.
-    ragas_llm : BaseRagasLLM
+    isaivam_llm : BaseIsaivamLLM
         Isaivam LLM instance to use for DSPy operations.
     """
-    from isaivam.optimizers.dspy_llm_wrapper import RagasDSPyLM
+    from isaivam.optimizers.dspy_llm_wrapper import IsaivamDSPyLM
 
-    lm = RagasDSPyLM(ragas_llm)
+    lm = IsaivamDSPyLM(isaivam_llm)
     dspy.settings.configure(lm=lm)
 
 
@@ -68,7 +68,7 @@ def pydantic_prompt_to_dspy_signature(
     return signature_class
 
 
-def ragas_dataset_to_dspy_examples(
+def isaivam_dataset_to_dspy_examples(
     dataset: SingleMetricAnnotation,
     prompt_name: str,
 ) -> t.List[t.Any]:

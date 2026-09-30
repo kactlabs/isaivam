@@ -19,7 +19,7 @@ class Loss(ABC):
         cls, source_type: t.Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         """
-        Define how Pydantic generates a schema for BaseRagasEmbeddings.
+        Define how Pydantic generates a schema for BaseIsaivamEmbeddings.
         """
         return core_schema.no_info_after_validator_function(
             cls,

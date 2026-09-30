@@ -28,6 +28,6 @@ class StructuredOutputAdapter(ABC):
             **kwargs: Additional model arguments
 
         Returns:
-            InstructorBaseRagasLLM-compatible instance
+            InstructorBaseIsaivamLLM-compatible instance
         """
         pass

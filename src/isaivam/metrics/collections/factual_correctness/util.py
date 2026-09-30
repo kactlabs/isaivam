@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from isaivam.prompt.metrics.base_prompt import BasePrompt
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class ClaimDecompositionInput(BaseModel):
@@ -176,7 +176,7 @@ Follow the level of atomicity and coverage as shown in the examples."""
     async def adapt(
         self,
         target_language: str,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         adapt_instruction: bool = False,
     ) -> "ClaimDecompositionPrompt":
         """

@@ -8,14 +8,14 @@ import numpy as np
 from pydantic import BaseModel
 
 from isaivam._analytics import PromptUsageEvent, track
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 from isaivam.prompt.pydantic_prompt import PydanticPrompt
 
 if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
-    from isaivam.embeddings.base import BaseRagasEmbeddings
-    from isaivam.llms.base import BaseRagasLLM
+    from isaivam.embeddings.base import BaseIsaivamEmbeddings
+    from isaivam.llms.base import BaseIsaivamLLM
 
 # type variables for input and output models
 InputModel = t.TypeVar("InputModel", bound=BaseModel)
@@ -36,7 +36,7 @@ class ExampleStore(ABC):
 
 @dataclass
 class InMemoryExampleStore(ExampleStore):
-    embeddings: BaseRagasEmbeddings
+    embeddings: BaseIsaivamEmbeddings
     _examples_list: t.List[t.Tuple[BaseModel, BaseModel]] = field(
         default_factory=list, repr=False
     )
@@ -108,7 +108,7 @@ class FewShotPydanticPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
 
     async def generate_multiple(
         self,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         data: InputModel,
         n: int = 1,
         temperature: t.Optional[float] = None,
@@ -138,7 +138,7 @@ class FewShotPydanticPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
     def from_pydantic_prompt(
         cls,
         pydantic_prompt: PydanticPrompt[InputModel, OutputModel],
-        embeddings: BaseRagasEmbeddings,
+        embeddings: BaseIsaivamEmbeddings,
     ) -> FewShotPydanticPrompt[InputModel, OutputModel]:
         # add examples to the example store
         example_store = InMemoryExampleStore(embeddings=embeddings)

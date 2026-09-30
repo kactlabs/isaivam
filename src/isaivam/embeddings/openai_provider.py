@@ -3,11 +3,11 @@ import typing as t
 from isaivam._analytics import EmbeddingUsageEvent, track
 from isaivam.cache import CacheInterface
 
-from .base import BaseRagasEmbedding
+from .base import BaseIsaivamEmbedding
 from .utils import validate_texts
 
 
-class OpenAIEmbeddings(BaseRagasEmbedding):
+class OpenAIEmbeddings(BaseIsaivamEmbedding):
     """OpenAI embeddings implementation with batch optimization.
 
     Supports both sync and async OpenAI clients with automatic detection.

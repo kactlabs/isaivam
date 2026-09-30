@@ -8,7 +8,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 from isaivam.callbacks import new_group
-from isaivam.llms import BaseRagasLLM, llm_factory
+from isaivam.llms import BaseIsaivamLLM, llm_factory
 from isaivam.prompt import PromptMixin
 from isaivam.testset.graph import KnowledgeGraph, Node
 from isaivam.testset.persona import Persona
@@ -17,13 +17,13 @@ if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
     from isaivam.dataset_schema import BaseSample
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
-def _default_llm_factory() -> t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"]:
+def _default_llm_factory() -> t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"]:
     """Create a default LLM instance with OpenAI gpt-4o-mini.
 
-    Returns InstructorBaseRagasLLM instance which satisfies BaseRagasLLM interface.
+    Returns InstructorBaseIsaivamLLM instance which satisfies BaseIsaivamLLM interface.
     """
     from openai import OpenAI
 
@@ -84,7 +84,7 @@ class BaseSynthesizer(ABC, t.Generic[Scenario], PromptMixin):
     """
 
     name: str = ""
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"] = field(
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"] = field(
         default_factory=_default_llm_factory
     )
     llm_context: t.Optional[str] = None

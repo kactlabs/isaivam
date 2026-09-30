@@ -15,7 +15,7 @@ from isaivam.utils import camel_to_snake
 if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
-    from isaivam.llms.base import BaseRagasLLM
+    from isaivam.llms.base import BaseIsaivamLLM
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class BasePrompt(ABC):
     @abstractmethod
     async def generate(
         self,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         data: t.Any,
         temperature: t.Optional[float] = None,
         stop: t.Optional[t.List[str]] = None,
@@ -53,7 +53,7 @@ class BasePrompt(ABC):
     @abstractmethod
     def generate_multiple(
         self,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         data: t.Any,
         n: int = 1,
         temperature: t.Optional[float] = None,
@@ -70,7 +70,7 @@ class BasePrompt(ABC):
         Save the prompt to a file.
         """
         data = {
-            "ragas_version": __version__,
+            "isaivam_version": __version__,
             "language": self.language,
             "original_hash": self.original_hash,
         }
@@ -88,12 +88,12 @@ class BasePrompt(ABC):
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        ragas_version = data.get("ragas_version")
-        if ragas_version != __version__:
+        isaivam_version = data.get("isaivam_version")
+        if isaivam_version != __version__:
             logger.warning(
                 "Prompt was saved with Isaivam v%s, but you are loading it with Isaivam v%s. "
                 "There might be incompatibilities.",
-                ragas_version,
+                isaivam_version,
                 __version__,
             )
 
@@ -139,7 +139,7 @@ class StringPrompt(BasePrompt):
 
     async def generate(
         self,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         data: str,
         temperature: t.Optional[float] = None,
         stop: t.Optional[t.List[str]] = None,
@@ -150,7 +150,7 @@ class StringPrompt(BasePrompt):
 
         Parameters
         ----------
-        llm : BaseRagasLLM
+        llm : BaseIsaivamLLM
             The language model to use for text generation.
         data : Optional[Dict[str, Any]], optional
             The data to format the instruction with, by default None.
@@ -179,7 +179,7 @@ class StringPrompt(BasePrompt):
 
     async def generate_multiple(
         self,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         data: str,
         n: int = 1,
         temperature: t.Optional[float] = None,
@@ -191,7 +191,7 @@ class StringPrompt(BasePrompt):
 
         Parameters
         ----------
-        llm : BaseRagasLLM
+        llm : BaseIsaivamLLM
             The language model to use for text generation.
         data : str
             The data to format the instruction with.

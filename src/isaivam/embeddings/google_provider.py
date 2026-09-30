@@ -5,11 +5,11 @@ import typing as t
 
 from isaivam.cache import CacheInterface
 
-from .base import BaseRagasEmbedding
+from .base import BaseIsaivamEmbedding
 from .utils import run_sync_in_async, validate_texts
 
 
-class GoogleEmbeddings(BaseRagasEmbedding):
+class GoogleEmbeddings(BaseIsaivamEmbedding):
     """Google embeddings using Vertex AI or Google AI (Gemini).
 
     Supports both Vertex AI and Google AI (Gemini) embedding models.

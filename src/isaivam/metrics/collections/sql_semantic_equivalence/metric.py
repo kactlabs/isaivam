@@ -9,7 +9,7 @@ from isaivam.metrics.result import MetricResult
 from .util import SQLEquivalenceInput, SQLEquivalenceOutput, SQLEquivalencePrompt
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class SQLSemanticEquivalence(BaseMetric):
@@ -48,11 +48,11 @@ class SQLSemanticEquivalence(BaseMetric):
         name: The metric name (default: "sql_semantic_equivalence")
     """
 
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "sql_semantic_equivalence",
         **kwargs,
     ):

@@ -8,7 +8,7 @@ import typing as t
 from .pydantic_prompt import PydanticPrompt
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import BaseRagasLLM, InstructorBaseRagasLLM
+    from isaivam.llms.base import BaseIsaivamLLM, InstructorBaseIsaivamLLM
 
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class PromptMixin:
     async def adapt_prompts(
         self,
         language: str,
-        llm: t.Union[BaseRagasLLM, InstructorBaseRagasLLM],
+        llm: t.Union[BaseIsaivamLLM, InstructorBaseIsaivamLLM],
         adapt_instruction: bool = False,
     ) -> t.Dict[str, PydanticPrompt]:
         """

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Union
 from isaivam.messages import AIMessage, HumanMessage, ToolCall, ToolMessage
 
 
-def convert_to_ragas_messages(
+def convert_to_isaivam_messages(
     messages: List[Dict[str, Any]],
 ) -> List[Union[HumanMessage, AIMessage, ToolMessage]]:
     """

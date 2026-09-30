@@ -12,7 +12,7 @@ from isaivam.dataset_schema import (
     BaseSample,
     EvaluationDataset,
     MultiTurnSample,
-    RagasDataset,
+    IsaivamDataset,
     SingleTurnSample,
 )
 
@@ -44,7 +44,7 @@ class TestsetPacket(BaseModel):
 
 
 @dataclass
-class Testset(RagasDataset[TestsetSample]):
+class Testset(IsaivamDataset[TestsetSample]):
     """
     Represents a test set containing multiple test samples.
 

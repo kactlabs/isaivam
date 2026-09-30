@@ -4,11 +4,11 @@ import typing as t
 
 from isaivam.cache import CacheInterface
 
-from .base import BaseRagasEmbedding
+from .base import BaseIsaivamEmbedding
 from .utils import batch_texts, get_optimal_batch_size, safe_import, validate_texts
 
 
-class LiteLLMEmbeddings(BaseRagasEmbedding):
+class LiteLLMEmbeddings(BaseIsaivamEmbedding):
     """Universal embedding interface using LiteLLM.
 
     Supports 100+ models across OpenAI, Azure, Google, Cohere, Anthropic, and more.

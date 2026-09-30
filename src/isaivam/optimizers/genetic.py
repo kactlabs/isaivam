@@ -24,7 +24,7 @@ from isaivam.run_config import RunConfig
 
 logger = logging.getLogger(__name__)
 
-RAGAS_OPTIMIZATION_GROUP = "ragas_optimization"
+ISAIVAM_OPTIMIZATION_GROUP = "isaivam_optimization"
 MIN_ANNOTATIONS = 10
 
 example_type = t.TypeVar(
@@ -166,7 +166,7 @@ class GeneticOptimizer(Optimizer):
 
         # new group for optimization
         optimization_generation_rm, optimization_generation_grp = new_group(
-            name=RAGAS_OPTIMIZATION_GROUP,
+            name=ISAIVAM_OPTIMIZATION_GROUP,
             inputs={"metric": self.metric.name},
             callbacks=callbacks,
         )

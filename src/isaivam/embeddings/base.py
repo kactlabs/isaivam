@@ -26,7 +26,7 @@ if t.TYPE_CHECKING:
 DEFAULT_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 
 
-class BaseRagasEmbedding(ABC):
+class BaseIsaivamEmbedding(ABC):
     """Modern abstract base class for Isaivam embedding implementations.
 
     This class provides a consistent interface for embedding text using various
@@ -148,7 +148,7 @@ class BaseRagasEmbedding(ABC):
         model: t.Optional[str] = None,
         client: t.Optional[t.Any] = None,
         **kwargs: t.Any,
-    ) -> "BaseRagasEmbedding":
+    ) -> "BaseIsaivamEmbedding":
         """Create an embedding instance from factory parameters with validation.
 
         This base implementation handles common validation patterns. Individual
@@ -179,7 +179,7 @@ class BaseRagasEmbedding(ABC):
         return cls(**init_kwargs)
 
 
-class BaseRagasEmbeddings(Embeddings, ABC):
+class BaseIsaivamEmbeddings(Embeddings, ABC):
     """
     Abstract base class for Isaivam embeddings.
 
@@ -249,7 +249,7 @@ class BaseRagasEmbeddings(Embeddings, ABC):
         cls, source_type: t.Any, handler: GetCoreSchemaHandler
     ) -> CoreSchema:
         """
-        Define how Pydantic generates a schema for BaseRagasEmbeddings.
+        Define how Pydantic generates a schema for BaseIsaivamEmbeddings.
         """
         return core_schema.no_info_after_validator_function(
             cls,
@@ -257,7 +257,7 @@ class BaseRagasEmbeddings(Embeddings, ABC):
         )
 
 
-class LangchainEmbeddingsWrapper(BaseRagasEmbeddings):
+class LangchainEmbeddingsWrapper(BaseIsaivamEmbeddings):
     """
     Wrapper for any embeddings from langchain.
 
@@ -389,7 +389,7 @@ class LangchainEmbeddingsWrapper(BaseRagasEmbeddings):
 
 
 @dataclass
-class HuggingfaceEmbeddings(BaseRagasEmbeddings):
+class HuggingfaceEmbeddings(BaseIsaivamEmbeddings):
     """
     Hugging Face embeddings class for generating embeddings using pre-trained models.
 
@@ -522,7 +522,7 @@ class HuggingfaceEmbeddings(BaseRagasEmbeddings):
         return predictions.tolist()
 
 
-class LlamaIndexEmbeddingsWrapper(BaseRagasEmbeddings):
+class LlamaIndexEmbeddingsWrapper(BaseIsaivamEmbeddings):
     """
     Wrapper for any embeddings from llama-index.
 
@@ -661,7 +661,7 @@ def embedding_factory(
     base_url: t.Optional[str] = None,
     cache: t.Optional[CacheInterface] = None,
     **kwargs: t.Any,
-) -> t.Union[BaseRagasEmbeddings, BaseRagasEmbedding]:
+) -> t.Union[BaseIsaivamEmbeddings, BaseIsaivamEmbedding]:
     """
     Create and return an embeddings instance. Unified factory supporting both legacy and modern interfaces.
 
@@ -695,7 +695,7 @@ def embedding_factory(
 
     Returns
     -------
-    BaseRagasEmbeddings or BaseRagasEmbedding
+    BaseIsaivamEmbeddings or BaseIsaivamEmbedding
         An instance of the requested embedding interface.
 
     Examples
@@ -794,7 +794,7 @@ def _looks_like_model_name(name: str) -> bool:
     return any(pattern in name.lower() for pattern in _LEGACY_MODEL_PATTERNS)
 
 
-def _get_provider_registry() -> t.Dict[str, t.Type[BaseRagasEmbedding]]:
+def _get_provider_registry() -> t.Dict[str, t.Type[BaseIsaivamEmbedding]]:
     """Auto-discover available provider classes and build a registry.
 
     Returns:
@@ -819,7 +819,7 @@ def _get_provider_registry() -> t.Dict[str, t.Type[BaseRagasEmbedding]]:
 
 def _create_modern_embedding(
     provider: str, model: t.Optional[str], client: t.Optional[t.Any], **kwargs: t.Any
-) -> BaseRagasEmbedding:
+) -> BaseIsaivamEmbedding:
     """Create a modern embedding instance based on the provider."""
     cache = kwargs.pop("cache", None)
 
@@ -848,7 +848,7 @@ def modern_embedding_factory(
     model: t.Optional[str] = None,
     client: t.Optional[t.Any] = None,
     **kwargs: t.Any,
-) -> BaseRagasEmbedding:
+) -> BaseIsaivamEmbedding:
     """
     Factory function to create a modern embedding instance based on the provider.
 
@@ -862,13 +862,13 @@ def modern_embedding_factory(
         **kwargs: Additional arguments for the provider.
 
     Returns:
-        BaseRagasEmbedding: An instance of the specified embedding provider.
+        BaseIsaivamEmbedding: An instance of the specified embedding provider.
     """
     result = embedding_factory(
         provider=provider, model=model, client=client, interface="modern", **kwargs
     )
-    # Type narrowing: modern interface always returns BaseRagasEmbedding
-    assert isinstance(result, BaseRagasEmbedding), (
-        "Modern interface should always return BaseRagasEmbedding"
+    # Type narrowing: modern interface always returns BaseIsaivamEmbedding
+    assert isinstance(result, BaseIsaivamEmbedding), (
+        "Modern interface should always return BaseIsaivamEmbedding"
     )
     return result

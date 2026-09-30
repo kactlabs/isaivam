@@ -18,7 +18,7 @@ from isaivam.prompt import PydanticPrompt
 if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
-    from isaivam.llms import BaseRagasLLM
+    from isaivam.llms import BaseIsaivamLLM
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ class RubricsScore(MetricWithLLM, SingleTurnMetric, MultiTurnMetric):
         self,
         name: str = "domain_specific_rubrics",
         rubrics: t.Dict[str, str] = DEFAULT_REFERENCE_FREE_RUBRICS,
-        llm: t.Optional[BaseRagasLLM] = None,
+        llm: t.Optional[BaseIsaivamLLM] = None,
         required_columns: t.Optional[t.Dict[MetricType, t.Set[str]]] = None,
         output_type: t.Optional[MetricOutputType] = MetricOutputType.DISCRETE,
         single_turn_prompt: t.Optional[PydanticPrompt] = None,

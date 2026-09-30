@@ -42,7 +42,7 @@ def extract_messages_from_model_invocation(model_inv):
     return messages[:-1]
 
 
-def convert_to_ragas_messages(traces: t.List):
+def convert_to_isaivam_messages(traces: t.List):
     """
     Converts a list of trace dictionaries into a list of messages.
     It extracts messages from the last modelInvocationInput and appends

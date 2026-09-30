@@ -15,7 +15,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class ContextPrecisionWithReference(BaseMetric):
@@ -56,11 +56,11 @@ class ContextPrecisionWithReference(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "context_precision_with_reference",
         **kwargs,
     ):
@@ -176,11 +176,11 @@ class ContextPrecisionWithoutReference(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "context_precision_without_reference",
         **kwargs,
     ):
@@ -287,7 +287,7 @@ class ContextPrecision(ContextPrecisionWithReference):
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         **kwargs,
     ):
         """Initialize ContextPrecision with the legacy default name."""
@@ -323,7 +323,7 @@ class ContextUtilization(ContextPrecisionWithoutReference):
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         **kwargs,
     ):
         """Initialize ContextUtilization with the legacy default name."""

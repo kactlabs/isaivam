@@ -20,7 +20,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class SummaryScore(BaseMetric):
@@ -72,11 +72,11 @@ class SummaryScore(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "summary_score",
         length_penalty: bool = True,
         coeff: float = 0.5,

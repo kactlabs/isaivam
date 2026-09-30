@@ -4,11 +4,11 @@ import typing as t
 
 from isaivam.cache import CacheInterface
 
-from .base import BaseRagasEmbedding
+from .base import BaseIsaivamEmbedding
 from .utils import batch_texts, run_sync_in_async, validate_texts
 
 
-class HuggingFaceEmbeddings(BaseRagasEmbedding):
+class HuggingFaceEmbeddings(BaseIsaivamEmbedding):
     """HuggingFace embeddings supporting both local and API-based models.
 
     Supports sentence-transformers for local models and HuggingFace API for

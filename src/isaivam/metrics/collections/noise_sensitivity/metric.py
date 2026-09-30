@@ -18,7 +18,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class NoiseSensitivity(BaseMetric):
@@ -69,11 +69,11 @@ class NoiseSensitivity(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "noise_sensitivity",
         mode: Literal["relevant", "irrelevant"] = "relevant",
         **kwargs,

@@ -9,7 +9,7 @@ from langchain_core.outputs import Generation, LLMResult
 from langchain_core.prompt_values import PromptValue
 
 from isaivam._analytics import LLMUsageEvent, track
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 from isaivam.run_config import RunConfig
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ oci = _oci  # type: ignore
 GenerativeAiClient = _GenerativeAiClient  # type: ignore
 
 
-class OCIGenAIWrapper(BaseRagasLLM):
+class OCIGenAIWrapper(BaseIsaivamLLM):
     """
     OCI Gen AI LLM wrapper for Isaivam.
 

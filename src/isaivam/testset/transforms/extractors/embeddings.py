@@ -2,7 +2,7 @@ import typing as t
 import warnings
 from dataclasses import dataclass, field
 
-from isaivam.embeddings import BaseRagasEmbedding, BaseRagasEmbeddings, embedding_factory
+from isaivam.embeddings import BaseIsaivamEmbedding, BaseIsaivamEmbeddings, embedding_factory
 from isaivam.embeddings.utils import run_sync_in_async
 from isaivam.testset.graph import Node
 from isaivam.testset.transforms.base import Extractor
@@ -19,13 +19,13 @@ class EmbeddingExtractor(Extractor):
         The name of the property to store the embedding
     embed_property_name : str
         The name of the property containing the text to embed
-    embedding_model : BaseRagasEmbeddings or BaseRagasEmbedding
+    embedding_model : BaseIsaivamEmbeddings or BaseIsaivamEmbedding
         The embedding model used for generating embeddings
     """
 
     property_name: str = "embedding"
     embed_property_name: str = "page_content"
-    embedding_model: t.Union[BaseRagasEmbeddings, BaseRagasEmbedding] = field(
+    embedding_model: t.Union[BaseIsaivamEmbeddings, BaseIsaivamEmbedding] = field(
         default_factory=embedding_factory
     )
 
@@ -44,9 +44,9 @@ class EmbeddingExtractor(Extractor):
                 f"node.property('{self.embed_property_name}') must be a string, found '{type(text)}'"
             )
 
-        # Handle both modern (BaseRagasEmbedding) and legacy (BaseRagasEmbeddings) interfaces
+        # Handle both modern (BaseIsaivamEmbedding) and legacy (BaseIsaivamEmbeddings) interfaces
         if hasattr(self.embedding_model, "aembed_text"):
-            # Modern interface (BaseRagasEmbedding)
+            # Modern interface (BaseIsaivamEmbedding)
             # Check if the client supports async operations by checking if is_async exists and is True
             if hasattr(self.embedding_model, "is_async") and getattr(
                 self.embedding_model, "is_async", False
@@ -65,7 +65,7 @@ class EmbeddingExtractor(Extractor):
                     self.embedding_model.embed_text, text
                 )  # type: ignore[attr-defined]
         else:
-            # Legacy interface (BaseRagasEmbeddings)
+            # Legacy interface (BaseIsaivamEmbeddings)
             embedding = await self.embedding_model.embed_text(text)  # type: ignore[misc]
 
         return self.property_name, embedding

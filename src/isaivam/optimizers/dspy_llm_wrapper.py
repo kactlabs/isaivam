@@ -1,9 +1,9 @@
 import typing as t
 
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 
 
-class RagasDSPyLM:
+class IsaivamDSPyLM:
     """
     Wrapper to make Isaivam LLM compatible with DSPy.
 
@@ -12,12 +12,12 @@ class RagasDSPyLM:
 
     Parameters
     ----------
-    ragas_llm : BaseRagasLLM
+    isaivam_llm : BaseIsaivamLLM
         The Isaivam LLM instance to wrap.
     """
 
-    def __init__(self, ragas_llm: BaseRagasLLM):
-        self.ragas_llm = ragas_llm
+    def __init__(self, isaivam_llm: BaseIsaivamLLM):
+        self.isaivam_llm = isaivam_llm
         self.history: t.List[t.Dict[str, t.Any]] = []
 
     def __call__(
@@ -75,7 +75,7 @@ class RagasDSPyLM:
 
         prompt_value = PromptValue(prompt_str="", messages=messages)
 
-        result = await self.ragas_llm.generate(prompt_value)
+        result = await self.isaivam_llm.generate(prompt_value)
 
         if hasattr(result, "generations") and result.generations:
             generation = result.generations[0][0]

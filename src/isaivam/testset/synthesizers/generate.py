@@ -12,12 +12,12 @@ from isaivam._analytics import TestsetGenerationEvent, track
 from isaivam.callbacks import new_group
 from isaivam.cost import TokenUsageParser
 from isaivam.embeddings.base import (
-    BaseRagasEmbeddings,
+    BaseIsaivamEmbeddings,
     LangchainEmbeddingsWrapper,
     LlamaIndexEmbeddingsWrapper,
 )
 from isaivam.executor import Executor
-from isaivam.llms import BaseRagasLLM, LangchainLLMWrapper, LlamaIndexLLMWrapper
+from isaivam.llms import BaseIsaivamLLM, LangchainLLMWrapper, LlamaIndexLLMWrapper
 from isaivam.run_config import RunConfig
 from isaivam.testset.graph import KnowledgeGraph, Node, NodeType
 from isaivam.testset.persona import Persona, generate_personas_from_kg
@@ -41,13 +41,13 @@ if t.TYPE_CHECKING:
     from llama_index.core.base.llms.base import BaseLLM as LlamaIndexLLM
     from llama_index.core.schema import Document as LlamaIndexDocument
 
-    from isaivam.embeddings.base import BaseRagasEmbeddings
-    from isaivam.llms.base import BaseRagasLLM
+    from isaivam.embeddings.base import BaseIsaivamEmbeddings
+    from isaivam.llms.base import BaseIsaivamLLM
     from isaivam.testset.synthesizers import QueryDistribution
     from isaivam.testset.synthesizers.base import BaseScenario
 
 
-RAGAS_TESTSET_GENERATION_GROUP_NAME = "isaivam testset generation"
+ISAIVAM_TESTSET_GENERATION_GROUP_NAME = "isaivam testset generation"
 logger = logging.getLogger(__name__)
 
 
@@ -58,7 +58,7 @@ class TestsetGenerator:
 
     Attributes
     ----------
-    llm : BaseRagasLLM
+    llm : BaseIsaivamLLM
         The language model to use for the generation process.
     knowledge_graph : KnowledgeGraph, default empty
         The knowledge graph to use for the generation process.
@@ -67,8 +67,8 @@ class TestsetGenerator:
         This context will be used to guide how the LLM generates queries and answers.
     """
 
-    llm: BaseRagasLLM
-    embedding_model: BaseRagasEmbeddings
+    llm: BaseIsaivamLLM
+    embedding_model: BaseIsaivamEmbeddings
     knowledge_graph: KnowledgeGraph = field(default_factory=KnowledgeGraph)
     persona_list: t.Optional[t.List[Persona]] = None
     llm_context: t.Optional[str] = None
@@ -116,8 +116,8 @@ class TestsetGenerator:
         documents: t.Sequence[LCDocument],
         testset_size: int,
         transforms: t.Optional[Transforms] = None,
-        transforms_llm: t.Optional[BaseRagasLLM] = None,
-        transforms_embedding_model: t.Optional[BaseRagasEmbeddings] = None,
+        transforms_llm: t.Optional[BaseIsaivamLLM] = None,
+        transforms_embedding_model: t.Optional[BaseIsaivamEmbeddings] = None,
         query_distribution: t.Optional[QueryDistribution] = None,
         run_config: t.Optional[RunConfig] = None,
         callbacks: t.Optional[Callbacks] = None,
@@ -137,9 +137,9 @@ class TestsetGenerator:
             The number of test samples to generate
         transforms : Optional[Transforms], optional
             Custom transforms to apply to the documents, by default None
-        transforms_llm : Optional[BaseRagasLLM], optional
+        transforms_llm : Optional[BaseIsaivamLLM], optional
             LLM to use for transforms if different from instance LLM, by default None
-        transforms_embedding_model : Optional[BaseRagasEmbeddings], optional
+        transforms_embedding_model : Optional[BaseIsaivamEmbeddings], optional
             Embedding model to use for transforms if different from instance model, by default None
         query_distribution : Optional[QueryDistribution], optional
             Distribution of query types to generate, by default None
@@ -304,8 +304,8 @@ class TestsetGenerator:
         chunks: t.Sequence[t.Union[LCDocument, str]],
         testset_size: int,
         transforms: t.Optional[Transforms] = None,
-        transforms_llm: t.Optional[BaseRagasLLM] = None,
-        transforms_embedding_model: t.Optional[BaseRagasEmbeddings] = None,
+        transforms_llm: t.Optional[BaseIsaivamLLM] = None,
+        transforms_embedding_model: t.Optional[BaseIsaivamEmbeddings] = None,
         query_distribution: t.Optional[QueryDistribution] = None,
         run_config: t.Optional[RunConfig] = None,
         callbacks: t.Optional[Callbacks] = None,
@@ -330,9 +330,9 @@ class TestsetGenerator:
             The number of test samples to generate
         transforms : Optional[Transforms], optional
             Custom transforms to apply to the chunks, by default None
-        transforms_llm : Optional[BaseRagasLLM], optional
+        transforms_llm : Optional[BaseIsaivamLLM], optional
             LLM to use for transforms if different from instance LLM, by default None
-        transforms_embedding_model : Optional[BaseRagasEmbeddings], optional
+        transforms_embedding_model : Optional[BaseIsaivamEmbeddings], optional
             Embedding model to use for transforms if different from instance model, by default None
         query_distribution : Optional[QueryDistribution], optional
             Distribution of query types to generate, by default None
@@ -471,8 +471,8 @@ class TestsetGenerator:
         5. Compile the results into an EvaluationDataset.
         """
         if run_config is not None:
-            # Only BaseRagasLLM has set_run_config method, not InstructorBaseRagasLLM
-            if isinstance(self.llm, BaseRagasLLM):
+            # Only BaseIsaivamLLM has set_run_config method, not InstructorBaseIsaivamLLM
+            if isinstance(self.llm, BaseIsaivamLLM):
                 self.llm.set_run_config(run_config)
 
         query_distribution = query_distribution or default_query_distribution(
@@ -481,18 +481,18 @@ class TestsetGenerator:
         callbacks = callbacks or []
 
         # dict to store any callbacks we define
-        ragas_callbacks = {}
+        isaivam_callbacks = {}
         # set the token usage parser
         if token_usage_parser is not None:
             from isaivam.cost import CostCallbackHandler
 
             cost_cb = CostCallbackHandler(token_usage_parser=token_usage_parser)
-            ragas_callbacks["cost_cb"] = cost_cb
+            isaivam_callbacks["cost_cb"] = cost_cb
         else:
             cost_cb = None
 
-        # append all the ragas_callbacks to the callbacks
-        for cb in ragas_callbacks.values():
+        # append all the isaivam_callbacks to the callbacks
+        for cb in isaivam_callbacks.values():
             if isinstance(callbacks, BaseCallbackManager):
                 callbacks.add_handler(cb)
             else:
@@ -500,7 +500,7 @@ class TestsetGenerator:
 
         # new group for Testset Generation
         testset_generation_rm, testset_generation_grp = new_group(
-            name=RAGAS_TESTSET_GENERATION_GROUP_NAME,
+            name=ISAIVAM_TESTSET_GENERATION_GROUP_NAME,
             inputs={"testset_size": testset_size},
             callbacks=callbacks,
         )

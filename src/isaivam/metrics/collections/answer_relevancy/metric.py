@@ -14,8 +14,8 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.embeddings.base import BaseRagasEmbedding
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.embeddings.base import BaseIsaivamEmbedding
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class AnswerRelevancy(BaseMetric):
@@ -60,13 +60,13 @@ class AnswerRelevancy(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
-    embeddings: "BaseRagasEmbedding"
+    llm: "InstructorBaseIsaivamLLM"
+    embeddings: "BaseIsaivamEmbedding"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
-        embeddings: "BaseRagasEmbedding",
+        llm: "InstructorBaseIsaivamLLM",
+        embeddings: "BaseIsaivamEmbedding",
         name: str = "answer_relevancy",
         strictness: int = 3,
         **kwargs,

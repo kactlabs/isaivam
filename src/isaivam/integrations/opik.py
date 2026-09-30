@@ -9,7 +9,7 @@ try:
         OpikTracer as LangchainOpikTracer,
     )  # type: ignore
 
-    from isaivam.evaluation import RAGAS_EVALUATION_CHAIN_NAME
+    from isaivam.evaluation import ISAIVAM_EVALUATION_CHAIN_NAME
 except ImportError:
     raise ImportError(
         "Opik is not installed. Please install it using `pip install opik` to use the Opik tracer."
@@ -34,7 +34,7 @@ class OpikTracer(LangchainOpikTracer):
     _evaluation_run_id: t.Optional[str] = None
 
     def _process_start_trace(self, run: "Run"):
-        if (run.parent_run_id is None) and (run.name == RAGAS_EVALUATION_CHAIN_NAME):
+        if (run.parent_run_id is None) and (run.name == ISAIVAM_EVALUATION_CHAIN_NAME):
             # Store the evaluation run id so we can flag the child traces and log them independently
             self._evaluation_run_id = str(run.id)
         else:

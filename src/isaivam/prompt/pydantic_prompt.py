@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from isaivam._analytics import PromptUsageEvent, track
 from isaivam._version import __version__
 from isaivam.callbacks import ChainType, new_group
-from isaivam.exceptions import RagasOutputParserException
+from isaivam.exceptions import IsaivamOutputParserException
 
 from .base import BasePrompt, StringIO
 from .utils import extract_json, get_all_strings, update_strings
@@ -24,11 +24,11 @@ from .utils import extract_json, get_all_strings, update_strings
 if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
-from isaivam.llms.base import BaseRagasLLM, InstructorBaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM, InstructorBaseIsaivamLLM
 
 
 def is_langchain_llm(
-    llm: t.Union[BaseRagasLLM, InstructorBaseRagasLLM, BaseLanguageModel],
+    llm: t.Union[BaseIsaivamLLM, InstructorBaseIsaivamLLM, BaseLanguageModel],
 ) -> bool:
     """
     Detect if an LLM is a LangChain LLM or a Isaivam LLM.
@@ -46,12 +46,12 @@ def is_langchain_llm(
         client = OpenAI(api_key="...")
         llm = llm_factory("gpt-4o-mini", client=client)
     """
-    # If it's a BaseRagasLLM, it's definitely not a LangChain LLM
-    if isinstance(llm, BaseRagasLLM):
+    # If it's a BaseIsaivamLLM, it's definitely not a LangChain LLM
+    if isinstance(llm, BaseIsaivamLLM):
         return False
 
-    # InstructorLLM and InstructorBaseRagasLLM are also not LangChain LLMs
-    if isinstance(llm, InstructorBaseRagasLLM):
+    # InstructorLLM and InstructorBaseIsaivamLLM are also not LangChain LLMs
+    if isinstance(llm, InstructorBaseIsaivamLLM):
         return False
 
     # If it's a LangChain LLM, return True
@@ -135,7 +135,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
 
     async def generate(
         self,
-        llm: t.Union[BaseRagasLLM, InstructorBaseRagasLLM, BaseLanguageModel],
+        llm: t.Union[BaseIsaivamLLM, InstructorBaseIsaivamLLM, BaseLanguageModel],
         data: InputModel,
         temperature: t.Optional[float] = None,
         stop: t.Optional[t.List[str]] = None,
@@ -149,7 +149,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
 
         Parameters
         ----------
-        llm : BaseRagasLLM
+        llm : BaseIsaivamLLM
             The language model to use for generation.
         data : InputModel
             The input data for generation.
@@ -187,7 +187,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
 
     async def generate_multiple(
         self,
-        llm: t.Union[BaseRagasLLM, InstructorBaseRagasLLM, BaseLanguageModel],
+        llm: t.Union[BaseIsaivamLLM, InstructorBaseIsaivamLLM, BaseLanguageModel],
         data: InputModel,
         n: int = 1,
         temperature: t.Optional[float] = None,
@@ -200,7 +200,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
 
         Parameters
         ----------
-        llm : BaseRagasLLM
+        llm : BaseIsaivamLLM
             The language model to use for generation.
         data : InputModel
             The input data for generation.
@@ -222,7 +222,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
 
         Raises
         ------
-        RagasOutputParserException
+        IsaivamOutputParserException
             If there's an error parsing the output.
         """
         callbacks = callbacks or []
@@ -232,13 +232,13 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
             name=self.name,
             inputs={"data": processed_data},
             callbacks=callbacks,
-            metadata={"type": ChainType.RAGAS_PROMPT},
+            metadata={"type": ChainType.ISAIVAM_PROMPT},
         )
         prompt_value = PromptValue(text=self.to_string(processed_data))
 
         # Handle different LLM types with different interfaces
         # 1. LangChain LLMs have agenerate_prompt() for async with specific signature
-        # 2. BaseRagasLLM have generate() with n, temperature, stop, callbacks
+        # 2. BaseIsaivamLLM have generate() with n, temperature, stop, callbacks
         # 3. InstructorLLM has generate()/agenerate() with only prompt and response_model
         if is_langchain_llm(llm):
             # This is a LangChain LLM - use agenerate_prompt() with batch for multiple generations
@@ -250,7 +250,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
                 stop=stop,
                 callbacks=prompt_cb,
             )
-        elif isinstance(llm, InstructorBaseRagasLLM):
+        elif isinstance(llm, InstructorBaseIsaivamLLM):
             # This is an InstructorLLM - use its generate()/agenerate() method
             # InstructorLLM.generate()/agenerate() only takes prompt and response_model parameters
             from isaivam.llms.base import InstructorLLM
@@ -272,9 +272,9 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
             generation = Generation(text=result.model_dump_json())
             resp = LLMResult(generations=[[generation]])
         else:
-            # This is a standard BaseRagasLLM - use generate()
-            ragas_llm = t.cast(BaseRagasLLM, llm)
-            resp = await ragas_llm.generate(
+            # This is a standard BaseIsaivamLLM - use generate()
+            isaivam_llm = t.cast(BaseIsaivamLLM, llm)
+            resp = await isaivam_llm.generate(
                 prompt_value,
                 n=n,
                 temperature=temperature,
@@ -283,10 +283,10 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
             )
 
         output_models = []
-        parser = RagasOutputParser(pydantic_object=self.output_model)
+        parser = IsaivamOutputParser(pydantic_object=self.output_model)
 
         # Handle cases where LLM returns fewer generations than requested
-        if is_langchain_llm(llm) or isinstance(llm, InstructorBaseRagasLLM):
+        if is_langchain_llm(llm) or isinstance(llm, InstructorBaseIsaivamLLM):
             available_generations = len(resp.generations)
         else:
             available_generations = len(resp.generations[0]) if resp.generations else 0
@@ -306,29 +306,29 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
             )
 
         for i in range(actual_n):
-            if is_langchain_llm(llm) or isinstance(llm, InstructorBaseRagasLLM):
+            if is_langchain_llm(llm) or isinstance(llm, InstructorBaseIsaivamLLM):
                 # For LangChain LLMs and InstructorLLM, each generation is in a separate batch result
                 output_string = resp.generations[i][0].text
             else:
                 # For Isaivam LLMs, all generations are in the first batch
                 output_string = resp.generations[0][i].text
             try:
-                # For the parser, we need a BaseRagasLLM, so if it's a LangChain LLM, we need to handle this
-                if is_langchain_llm(llm) or isinstance(llm, InstructorBaseRagasLLM):
-                    # Skip parsing retry for LangChain LLMs since parser expects BaseRagasLLM
+                # For the parser, we need a BaseIsaivamLLM, so if it's a LangChain LLM, we need to handle this
+                if is_langchain_llm(llm) or isinstance(llm, InstructorBaseIsaivamLLM):
+                    # Skip parsing retry for LangChain LLMs since parser expects BaseIsaivamLLM
                     answer = self.output_model.model_validate_json(output_string)
                 else:
-                    ragas_llm = t.cast(BaseRagasLLM, llm)
+                    isaivam_llm = t.cast(BaseIsaivamLLM, llm)
                     answer = await parser.parse_output_string(
                         output_string=output_string,
                         prompt_value=prompt_value,
-                        llm=ragas_llm,
+                        llm=isaivam_llm,
                         callbacks=prompt_cb,
                         retries_left=retries_left,
                     )
                 processed_output = self.process_output(answer, data)  # type: ignore
                 output_models.append(processed_output)
-            except RagasOutputParserException as e:
+            except IsaivamOutputParserException as e:
                 prompt_rm.on_chain_error(error=e)
                 logger.error("Prompt %s failed to parse output: %s", self.name, e)
                 raise e
@@ -357,7 +357,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
     async def adapt(
         self,
         target_language: str,
-        llm: t.Union[BaseRagasLLM, InstructorBaseRagasLLM],
+        llm: t.Union[BaseIsaivamLLM, InstructorBaseIsaivamLLM],
         adapt_instruction: bool = False,
     ) -> "PydanticPrompt[InputModel, OutputModel]":
         """
@@ -453,7 +453,7 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
         Save the prompt to a file.
         """
         data = {
-            "ragas_version": __version__,
+            "isaivam_version": __version__,
             "original_hash": (
                 hash(self) if self.original_hash is None else self.original_hash
             ),
@@ -476,12 +476,12 @@ class PydanticPrompt(BasePrompt, t.Generic[InputModel, OutputModel]):
             data = json.load(f)
 
         # You might want to add version compatibility checks here
-        ragas_version = data.get("ragas_version")
-        if ragas_version != __version__:
+        isaivam_version = data.get("isaivam_version")
+        if isaivam_version != __version__:
             logger.warning(
                 "Prompt was saved with Isaivam v%s, but you are loading it with Isaivam v%s. "
                 "There might be incompatibilities.",
-                ragas_version,
+                isaivam_version,
                 __version__,
             )
         original_hash = data.get("original_hash")
@@ -522,12 +522,12 @@ class FixOutputFormat(PydanticPrompt[OutputStringAndPrompt, StringIO]):
 fix_output_format_prompt = FixOutputFormat()
 
 
-class RagasOutputParser(PydanticOutputParser[OutputModel]):
+class IsaivamOutputParser(PydanticOutputParser[OutputModel]):
     async def parse_output_string(
         self,
         output_string: str,
         prompt_value: PromptValue,
-        llm: BaseRagasLLM,
+        llm: BaseIsaivamLLM,
         callbacks: Callbacks,
         retries_left: int = 1,
     ) -> OutputModel:
@@ -554,7 +554,7 @@ class RagasOutputParser(PydanticOutputParser[OutputModel]):
                 retry_rm.on_chain_end({"fixed_output_string": fixed_output_string})
                 result = super().parse(fixed_output_string.text)
             else:
-                raise RagasOutputParserException()
+                raise IsaivamOutputParserException()
         return result
 
 

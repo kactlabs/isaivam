@@ -51,6 +51,6 @@ def __getattr__(name):
         except ImportError:
             raise ImportError(
                 "isaivam.experimental requires installation: "
-                "pip install ragas[experimental]"
+                "pip install isaivam[experimental]"
             )
     raise AttributeError(f"module 'isaivam' has no attribute '{name}'")

@@ -17,7 +17,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class AgentGoalAccuracyWithReference(BaseMetric):
@@ -58,11 +58,11 @@ class AgentGoalAccuracyWithReference(BaseMetric):
         name: The metric name
     """
 
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "agent_goal_accuracy",
         **kwargs,
     ):
@@ -167,11 +167,11 @@ class AgentGoalAccuracyWithoutReference(BaseMetric):
         name: The metric name
     """
 
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "agent_goal_accuracy",
         **kwargs,
     ):

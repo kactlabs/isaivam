@@ -1,6 +1,6 @@
 from isaivam.llms.base import (
-    BaseRagasLLM,
-    InstructorBaseRagasLLM,
+    BaseIsaivamLLM,
+    InstructorBaseIsaivamLLM,
     InstructorLLM,
     InstructorTypeVar,
     LangchainLLMWrapper as _LangchainLLMWrapper,
@@ -32,9 +32,9 @@ LlamaIndexLLMWrapper = DeprecationHelper(
 )
 
 __all__ = [
-    "BaseRagasLLM",
+    "BaseIsaivamLLM",
     "HaystackLLMWrapper",
-    "InstructorBaseRagasLLM",
+    "InstructorBaseIsaivamLLM",
     "InstructorLLM",
     "LangchainLLMWrapper",
     "LlamaIndexLLMWrapper",

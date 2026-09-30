@@ -10,7 +10,7 @@ except ImportError:
     )
 
 
-def transform_to_ragas_dataset(
+def transform_to_isaivam_dataset(
     grip_tape_rag_contexts: t.List[RagContext],  # type: ignore
     reference_contexts: t.Optional[t.List[str]] = None,
     references: t.Optional[t.List[str]] = None,

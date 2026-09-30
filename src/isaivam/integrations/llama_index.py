@@ -6,7 +6,7 @@ import typing as t
 
 from isaivam.dataset_schema import EvaluationDataset, EvaluationResult, SingleTurnSample
 from isaivam.embeddings import LlamaIndexEmbeddingsWrapper
-from isaivam.evaluation import evaluate as ragas_evaluate
+from isaivam.evaluation import evaluate as isaivam_evaluate
 from isaivam.executor import Executor
 from isaivam.llms import LlamaIndexLLMWrapper
 from isaivam.messages import AIMessage, HumanMessage, Message, ToolCall, ToolMessage
@@ -100,7 +100,7 @@ def evaluate(
         sample.response = responses[i]
         sample.retrieved_contexts = retrieved_contexts[i]
 
-    results = ragas_evaluate(
+    results = isaivam_evaluate(
         dataset=dataset,
         metrics=metrics,
         llm=li_llm,
@@ -117,7 +117,7 @@ def evaluate(
     return t.cast(EvaluationResult, results)
 
 
-def convert_to_ragas_messages(events: t.List[Event]) -> t.List[Message]:
+def convert_to_isaivam_messages(events: t.List[Event]) -> t.List[Message]:
     """
     Convert a sequence of LlamIndex agent events into Isaivam message objects.
 
@@ -149,7 +149,7 @@ def convert_to_ragas_messages(events: t.List[Event]) -> t.List[Message]:
         raise ImportError(
             "Please install the llama_index package to use this function."
         )
-    ragas_messages = []
+    isaivam_messages = []
     tool_call_ids = set()
 
     for event in events:
@@ -165,9 +165,9 @@ def convert_to_ragas_messages(events: t.List[Event]) -> t.List[Message]:
                 )
 
             if last_chat_message.role == MessageRole.USER:
-                if ragas_messages and isinstance(ragas_messages[-1], ToolMessage):
+                if isaivam_messages and isinstance(isaivam_messages[-1], ToolMessage):
                     continue
-                ragas_messages.append(HumanMessage(content=content))
+                isaivam_messages.append(HumanMessage(content=content))
 
         elif isinstance(event, AgentOutput):
             content = "\n".join(
@@ -175,30 +175,30 @@ def convert_to_ragas_messages(events: t.List[Event]) -> t.List[Message]:
                 for block in event.response.blocks
                 if isinstance(block, TextBlock)
             )
-            ragas_tool_calls = None
+            isaivam_tool_calls = None
 
             if hasattr(event, "tool_calls"):
                 raw_tool_calls = event.tool_calls
-                ragas_tool_calls = []
+                isaivam_tool_calls = []
                 for tc in raw_tool_calls:
                     if tc.tool_id not in tool_call_ids:
                         tool_call_ids.add(tc.tool_id)
-                        ragas_tool_calls.append(
+                        isaivam_tool_calls.append(
                             ToolCall(
                                 name=tc.tool_name,
                                 args=tc.tool_kwargs,
                             )
                         )
-            ragas_messages.append(
+            isaivam_messages.append(
                 AIMessage(
                     content=content,
-                    tool_calls=ragas_tool_calls if ragas_tool_calls else None,
+                    tool_calls=isaivam_tool_calls if isaivam_tool_calls else None,
                 )
             )
         elif isinstance(event, ToolCallResult):
             if event.return_direct:
-                ragas_messages.append(AIMessage(content=event.tool_output.content))
+                isaivam_messages.append(AIMessage(content=event.tool_output.content))
             else:
-                ragas_messages.append(ToolMessage(content=event.tool_output.content))
+                isaivam_messages.append(ToolMessage(content=event.tool_output.content))
 
-    return ragas_messages
+    return isaivam_messages

@@ -12,7 +12,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class InstanceSpecificRubrics(BaseMetric):
@@ -61,11 +61,11 @@ class InstanceSpecificRubrics(BaseMetric):
         name: The metric name (default: "instance_specific_rubrics")
     """
 
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         name: str = "instance_specific_rubrics",
         **kwargs,
     ):

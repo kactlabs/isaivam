@@ -8,7 +8,7 @@ from isaivam.metrics.collections.base import BaseMetric
 from isaivam.metrics.result import MetricResult
 
 if t.TYPE_CHECKING:
-    from isaivam.embeddings.base import BaseRagasEmbedding
+    from isaivam.embeddings.base import BaseIsaivamEmbedding
 
 
 class SemanticSimilarity(BaseMetric):
@@ -51,11 +51,11 @@ class SemanticSimilarity(BaseMetric):
         allowed_values: Score range (0.0 to 1.0)
     """
 
-    embeddings: "BaseRagasEmbedding"
+    embeddings: "BaseIsaivamEmbedding"
 
     def __init__(
         self,
-        embeddings: "BaseRagasEmbedding",
+        embeddings: "BaseIsaivamEmbedding",
         name: str = "semantic_similarity",
         threshold: t.Optional[float] = None,
         **kwargs,

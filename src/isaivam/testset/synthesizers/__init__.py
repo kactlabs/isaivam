@@ -1,7 +1,7 @@
 import logging
 import typing as t
 
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 from isaivam.testset.graph import KnowledgeGraph
 from isaivam.testset.synthesizers.multi_hop import (
     MultiHopAbstractQuerySynthesizer,
@@ -14,7 +14,7 @@ from isaivam.testset.synthesizers.single_hop.specific import (
 from .base import BaseSynthesizer
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ QueryDistribution = t.List[t.Tuple[BaseSynthesizer, float]]
 
 
 def default_query_distribution(
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"],
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"],
     kg: t.Optional[KnowledgeGraph] = None,
     llm_context: t.Optional[str] = None,
 ) -> QueryDistribution:

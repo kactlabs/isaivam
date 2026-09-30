@@ -20,21 +20,21 @@ from isaivam.utils import num_tokens_from_string
 from .engine import Parallel
 
 if t.TYPE_CHECKING:
-    from isaivam.embeddings.base import BaseRagasEmbeddings
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.embeddings.base import BaseIsaivamEmbeddings
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
     from .engine import Transforms
 
 from langchain_core.documents import Document as LCDocument
 
-from isaivam.embeddings.base import BaseRagasEmbeddings
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.embeddings.base import BaseIsaivamEmbeddings
+from isaivam.llms.base import BaseIsaivamLLM
 
 
 def default_transforms(
     documents: t.List[LCDocument],
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"],
-    embedding_model: BaseRagasEmbeddings,
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"],
+    embedding_model: BaseIsaivamEmbeddings,
 ) -> "Transforms":
     """
     Creates and returns a default set of transforms for processing a knowledge graph.
@@ -168,8 +168,8 @@ def default_transforms(
 
 
 def default_transforms_for_prechunked(
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"],
-    embedding_model: BaseRagasEmbeddings,
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"],
+    embedding_model: BaseIsaivamEmbeddings,
 ) -> "Transforms":
     """
     Creates and returns a default set of transforms for processing a knowledge graph

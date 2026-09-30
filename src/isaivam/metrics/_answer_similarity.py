@@ -81,13 +81,13 @@ class SemanticSimilarity(MetricWithEmbeddings, SingleTurnMetric):
                 "async score [ascore()] not implemented for HuggingFace embeddings"
             )
         else:
-            # Handle both modern (BaseRagasEmbedding) and legacy (BaseRagasEmbeddings) interfaces
+            # Handle both modern (BaseIsaivamEmbedding) and legacy (BaseIsaivamEmbeddings) interfaces
             if hasattr(self.embeddings, "aembed_text"):
-                # Modern interface (BaseRagasEmbedding)
+                # Modern interface (BaseIsaivamEmbedding)
                 embedding_1 = np.array(await self.embeddings.aembed_text(ground_truth))  # type: ignore[attr-defined]
                 embedding_2 = np.array(await self.embeddings.aembed_text(answer))  # type: ignore[attr-defined]
             else:
-                # Legacy interface (BaseRagasEmbeddings)
+                # Legacy interface (BaseIsaivamEmbeddings)
                 embedding_1 = np.array(await self.embeddings.embed_text(ground_truth))  # type: ignore[misc]
                 embedding_2 = np.array(await self.embeddings.embed_text(answer))  # type: ignore[misc]
             # Normalization factors of the above embeddings

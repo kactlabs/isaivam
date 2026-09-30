@@ -109,7 +109,7 @@ def get_userid() -> str:
 class BaseEvent(BaseModel):
     event_type: str
     user_id: str = Field(default_factory=get_userid)
-    ragas_version: str = Field(default=__version__)
+    isaivam_version: str = Field(default=__version__)
 
 
 class EvaluationEvent(BaseEvent):

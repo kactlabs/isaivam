@@ -183,7 +183,7 @@ class DSPyOptimizer(Optimizer):
         from isaivam.optimizers.dspy_adapter import (
             create_dspy_metric,
             pydantic_prompt_to_dspy_signature,
-            ragas_dataset_to_dspy_examples,
+            isaivam_dataset_to_dspy_examples,
             setup_dspy_llm,
         )
 
@@ -197,7 +197,7 @@ class DSPyOptimizer(Optimizer):
 
             signature = pydantic_prompt_to_dspy_signature(prompt)
             module = self._dspy.Predict(signature)
-            examples = ragas_dataset_to_dspy_examples(dataset, prompt_name)
+            examples = isaivam_dataset_to_dspy_examples(dataset, prompt_name)
 
             teleprompter = self._dspy.MIPROv2(
                 num_candidates=self.num_candidates,

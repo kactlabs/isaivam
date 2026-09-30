@@ -48,7 +48,7 @@ def _process_search_results(search_results: t.Dict[str, t.List]) -> t.List[str]:
     return retrieved_contexts
 
 
-def transform_to_ragas_dataset(
+def transform_to_isaivam_dataset(
     user_inputs: t.Optional[t.List[str]] = None,
     r2r_responses: t.Optional[t.List] = None,
     reference_contexts: t.Optional[t.List[str]] = None,

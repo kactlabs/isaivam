@@ -18,8 +18,8 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.embeddings.base import BaseRagasEmbedding
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.embeddings.base import BaseIsaivamEmbedding
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class AnswerCorrectness(BaseMetric):
@@ -72,13 +72,13 @@ class AnswerCorrectness(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
-    embeddings: t.Optional["BaseRagasEmbedding"]
+    llm: "InstructorBaseIsaivamLLM"
+    embeddings: t.Optional["BaseIsaivamEmbedding"]
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
-        embeddings: t.Optional["BaseRagasEmbedding"] = None,
+        llm: "InstructorBaseIsaivamLLM",
+        embeddings: t.Optional["BaseIsaivamEmbedding"] = None,
         name: str = "answer_correctness",
         weights: List[float] = [0.75, 0.25],
         beta: float = 1.0,

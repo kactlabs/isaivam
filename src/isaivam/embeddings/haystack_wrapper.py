@@ -4,7 +4,7 @@ import typing as t
 import numpy as np
 
 from isaivam.cache import CacheInterface
-from isaivam.embeddings.base import BaseRagasEmbeddings
+from isaivam.embeddings.base import BaseIsaivamEmbeddings
 from isaivam.run_config import RunConfig
 
 if t.TYPE_CHECKING:
@@ -22,7 +22,7 @@ if t.TYPE_CHECKING:
     )
 
 
-class HaystackEmbeddingsWrapper(BaseRagasEmbeddings):
+class HaystackEmbeddingsWrapper(BaseIsaivamEmbeddings):
     """
     A wrapper for using Haystack embedders within the Isaivam framework.
 

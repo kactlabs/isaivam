@@ -54,7 +54,7 @@ def is_multiple_completion_supported(llm: BaseLanguageModel) -> bool:
 
 
 @dataclass
-class BaseRagasLLM(ABC):
+class BaseIsaivamLLM(ABC):
     run_config: RunConfig = field(default_factory=RunConfig, repr=False)
     multiple_completion_supported: bool = field(default=False, repr=False)
     cache: t.Optional[CacheInterface] = field(default=None, repr=False)
@@ -127,9 +127,9 @@ class BaseRagasLLM(ABC):
         return result
 
 
-class LangchainLLMWrapper(BaseRagasLLM):
+class LangchainLLMWrapper(BaseIsaivamLLM):
     """
-    A simple base class for RagasLLMs that is based on Langchain's BaseLanguageModel
+    A simple base class for IsaivamLLMs that is based on Langchain's BaseLanguageModel
     interface. it implements 2 functions:
     - generate_text: for generating text from a given PromptValue
     - agenerate_text: for generating text from a given PromptValue asynchronously
@@ -349,7 +349,7 @@ class LangchainLLMWrapper(BaseRagasLLM):
         return f"{self.__class__.__name__}(langchain_llm={self.langchain_llm.__class__.__name__}(...))"
 
 
-class LlamaIndexLLMWrapper(BaseRagasLLM):
+class LlamaIndexLLMWrapper(BaseIsaivamLLM):
     """
     A Adaptor for LlamaIndex LLMs
 
@@ -611,7 +611,7 @@ def llm_factory(
     cache: t.Optional[CacheInterface] = None,
     mode: t.Optional[instructor.Mode] = None,
     **kwargs: t.Any,
-) -> InstructorBaseRagasLLM:
+) -> InstructorBaseIsaivamLLM:
     """
     Create an LLM instance for structured output generation with automatic adapter selection.
 
@@ -644,7 +644,7 @@ def llm_factory(
         **kwargs: Additional model arguments (temperature, max_tokens, top_p, etc).
 
     Returns:
-        InstructorBaseRagasLLM: Instance with generate() and agenerate() methods.
+        InstructorBaseIsaivamLLM: Instance with generate() and agenerate() methods.
 
     Raises:
         ValueError: If client is missing, provider is unsupported, model is invalid,
@@ -764,7 +764,7 @@ class InstructorModelArgs(BaseModel):
     system_prompt: t.Optional[str] = None
 
 
-class InstructorBaseRagasLLM(ABC):
+class InstructorBaseIsaivamLLM(ABC):
     """Base class for LLMs using the Instructor library pattern."""
 
     @abstractmethod
@@ -785,7 +785,7 @@ class InstructorBaseRagasLLM(ABC):
         """Asynchronously generate a response using the configured LLM."""
 
 
-class InstructorLLM(InstructorBaseRagasLLM):
+class InstructorLLM(InstructorBaseIsaivamLLM):
     """LLM wrapper using the Instructor library for structured outputs."""
 
     def __init__(

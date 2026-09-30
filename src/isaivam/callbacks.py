@@ -53,7 +53,7 @@ class ChainType(Enum):
     EVALUATION = "evaluation"
     METRIC = "metric"
     ROW = "row"
-    RAGAS_PROMPT = "ragas_prompt"
+    ISAIVAM_PROMPT = "isaivam_prompt"
 
 
 class ChainRun(BaseModel):
@@ -78,7 +78,7 @@ class ChainRunEncoder(json.JSONEncoder):
 
 
 @dataclass
-class RagasTracer(BaseCallbackHandler):
+class IsaivamTracer(BaseCallbackHandler):
     traces: t.Dict[str, ChainRun] = field(default_factory=dict)
 
     def on_chain_start(

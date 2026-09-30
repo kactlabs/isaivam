@@ -6,12 +6,12 @@ import typing as t
 
 from isaivam._analytics import LLMUsageEvent, track
 from isaivam.cache import CacheInterface, cacher
-from isaivam.llms.base import InstructorBaseRagasLLM, InstructorTypeVar
+from isaivam.llms.base import InstructorBaseIsaivamLLM, InstructorTypeVar
 
 logger = logging.getLogger(__name__)
 
 
-class LiteLLMStructuredLLM(InstructorBaseRagasLLM):
+class LiteLLMStructuredLLM(InstructorBaseIsaivamLLM):
     """
     LLM wrapper using LiteLLM for structured outputs.
 

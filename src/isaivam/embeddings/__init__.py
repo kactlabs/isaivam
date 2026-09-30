@@ -1,8 +1,8 @@
 # Legacy embeddings - maintain backward compatibility
 # Modern embeddings - new interface
 from isaivam.embeddings.base import (
-    BaseRagasEmbedding,
-    BaseRagasEmbeddings,
+    BaseIsaivamEmbedding,
+    BaseIsaivamEmbeddings,
     HuggingfaceEmbeddings,
     LangchainEmbeddingsWrapper as _LangchainEmbeddingsWrapper,
     LlamaIndexEmbeddingsWrapper as _LlamaIndexEmbeddingsWrapper,
@@ -52,16 +52,16 @@ def embedding_factory(*args, **kwargs):
 
 __all__ = [
     # Legacy interface (backward compatibility)
-    "BaseRagasEmbeddings",
+    "BaseIsaivamEmbeddings",
     "HaystackEmbeddingsWrapper",
     "HuggingfaceEmbeddings",
     "LangchainEmbeddingsWrapper",
     "LlamaIndexEmbeddingsWrapper",
     "embedding_factory",
     # Modern interface
-    "BaseRagasEmbedding",
+    "BaseIsaivamEmbedding",
     # Backward compatibility alias
-    "RagasBaseEmbedding",
+    "IsaivamBaseEmbedding",
     "OpenAIEmbeddings",
     "GoogleEmbeddings",
     "LiteLLMEmbeddings",
@@ -73,4 +73,4 @@ __all__ = [
 ]
 
 # Backward compatibility alias
-RagasBaseEmbedding = BaseRagasEmbedding
+IsaivamBaseEmbedding = BaseIsaivamEmbedding

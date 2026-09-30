@@ -3,8 +3,8 @@
 import asyncio
 import typing as t
 
-from isaivam.embeddings.base import BaseRagasEmbedding
-from isaivam.llms.base import InstructorBaseRagasLLM
+from isaivam.embeddings.base import BaseIsaivamEmbedding
+from isaivam.llms.base import InstructorBaseIsaivamLLM
 from isaivam.metrics.base import SimpleBaseMetric
 from isaivam.metrics.result import MetricResult
 from isaivam.metrics.validators import NumericValidator
@@ -114,7 +114,7 @@ class BaseMetric(SimpleBaseMetric, NumericValidator):
         """Validate that a modern InstructorLLM is provided."""
         llm = getattr(self, "llm", None)
 
-        if not isinstance(llm, InstructorBaseRagasLLM):
+        if not isinstance(llm, InstructorBaseIsaivamLLM):
             raise ValueError(
                 f"Collections metrics only support modern InstructorLLM. Found: {type(llm).__name__}. "
                 f"Use: llm_factory('gpt-4o-mini', client=openai_client)"
@@ -124,7 +124,7 @@ class BaseMetric(SimpleBaseMetric, NumericValidator):
         """Validate that modern embeddings are provided."""
         embeddings = getattr(self, "embeddings", None)
 
-        if not isinstance(embeddings, BaseRagasEmbedding):
+        if not isinstance(embeddings, BaseIsaivamEmbedding):
             raise ValueError(
                 f"Collections metrics only support modern embeddings. Found: {type(embeddings).__name__}. "
                 f"Use: embedding_factory('openai', model='text-embedding-ada-002', client=openai_client, interface='modern')"

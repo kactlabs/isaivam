@@ -23,7 +23,7 @@ if t.TYPE_CHECKING:
     from isaivam.metrics.base import Metric
     from isaivam.tokenizers import BaseTokenizer
 
-DEBUG_ENV_VAR = "RAGAS_DEBUG"
+DEBUG_ENV_VAR = "ISAIVAM_DEBUG"
 
 
 @lru_cache(maxsize=1)
@@ -31,8 +31,8 @@ def get_cache_dir() -> str:
     "get cache location"
     DEFAULT_XDG_CACHE_HOME = "~/.cache"
     xdg_cache = os.getenv("XDG_CACHE_HOME", DEFAULT_XDG_CACHE_HOME)
-    default_ragas_cache = os.path.join(xdg_cache, "isaivam")
-    return os.path.expanduser(os.getenv("RAGAS_CACHE_HOME", default_ragas_cache))
+    default_isaivam_cache = os.path.join(xdg_cache, "isaivam")
+    return os.path.expanduser(os.getenv("ISAIVAM_CACHE_HOME", default_isaivam_cache))
 
 
 @lru_cache(maxsize=1)
@@ -344,7 +344,7 @@ def set_logging_level(logger_name: str = __name__, level: int = logging.DEBUG):
     log_format = (
         "[%(local_time)s - (%(utc_time)s UTC)] "
         "[%(levelname)s] [%(name)s] "
-        "[RagasID: %(ragas_id)s, App-Version: %(app_version)s] %(message)s"
+        "[IsaivamID: %(isaivam_id)s, App-Version: %(app_version)s] %(message)s"
     )
 
     # Create a formatter with the custom formatter
@@ -377,7 +377,7 @@ class _ContextualFormatter(logging.Formatter):
         # Add local time
         record.local_time = self.format_time(record, _LOGGER_DATE_TIME, local_time=True)
         # Add additional context
-        record.ragas_id = get_userid()
+        record.isaivam_id = get_userid()
         record.app_version = __version__
         return super().format(record)
 
@@ -691,7 +691,7 @@ def get_test_directory():
     import tempfile
 
     # Create a directory in the system temp directory
-    test_dir = os.path.join(tempfile.gettempdir(), f"ragas_test_{create_nano_id()}")
+    test_dir = os.path.join(tempfile.gettempdir(), f"isaivam_test_{create_nano_id()}")
     os.makedirs(test_dir, exist_ok=True)
 
     return test_dir

@@ -15,7 +15,7 @@ Primary API:
     run_ag_ui_row: Run a single row against an AG-UI endpoint and return enriched data
 
 Conversion Functions:
-    convert_to_ragas_messages: Convert AG-UI event sequences to Isaivam messages
+    convert_to_isaivam_messages: Convert AG-UI event sequences to Isaivam messages
     convert_messages_snapshot: Convert AG-UI message snapshots to Isaivam messages
     convert_messages_to_ag_ui: Convert Isaivam messages to AG-UI message format
 
@@ -78,14 +78,14 @@ Examples:
 
     Convert streaming AG-UI events to Isaivam messages::
 
-        from isaivam.integrations.ag_ui import convert_to_ragas_messages
+        from isaivam.integrations.ag_ui import convert_to_isaivam_messages
         from ag_ui.core import Event
 
         # List of AG-UI events from agent run
         ag_ui_events: List[Event] = [...]
 
         # Convert to Isaivam messages
-        ragas_messages = convert_to_ragas_messages(ag_ui_events, metadata=True)
+        isaivam_messages = convert_to_isaivam_messages(ag_ui_events, metadata=True)
 """
 
 from __future__ import annotations
@@ -108,7 +108,7 @@ __all__ = [
     # Event collection
     "AGUIEventCollector",
     # Message conversion
-    "convert_to_ragas_messages",
+    "convert_to_isaivam_messages",
     "convert_messages_snapshot",
     "convert_messages_to_ag_ui",
     # Endpoint calling
@@ -191,7 +191,7 @@ class AGUIEventCollector:
     >>> collector = AGUIEventCollector(metadata=True)
     >>> for event in ag_ui_event_stream:
     ...     collector.process_event(event)
-    >>> ragas_messages = collector.get_messages()
+    >>> isaivam_messages = collector.get_messages()
     """
 
     def __init__(self, metadata: bool = False):
@@ -688,7 +688,7 @@ class AGUIEventCollector:
         self._current_step = None
 
 
-def convert_to_ragas_messages(
+def convert_to_isaivam_messages(
     events: List[Any],
     metadata: bool = False,
 ) -> List[Union[HumanMessage, AIMessage, ToolMessage]]:
@@ -724,7 +724,7 @@ def convert_to_ragas_messages(
     --------
     Convert AG-UI events from an agent run::
 
-        >>> from isaivam.integrations.ag_ui import convert_to_ragas_messages
+        >>> from isaivam.integrations.ag_ui import convert_to_isaivam_messages
         >>> from ag_ui.core import (
         ...     RunStartedEvent, TextMessageStartEvent,
         ...     TextMessageContentEvent, TextMessageEndEvent
@@ -737,7 +737,7 @@ def convert_to_ragas_messages(
         ...     TextMessageContentEvent(message_id="msg-1", delta=" world"),
         ...     TextMessageEndEvent(message_id="msg-1"),
         ... ]
-        >>> messages = convert_to_ragas_messages(events, metadata=True)
+        >>> messages = convert_to_isaivam_messages(events, metadata=True)
         >>> messages[0].content
         'Hello world'
 
@@ -760,7 +760,7 @@ def convert_to_ragas_messages(
         ...         content="Sunny, 72°F"
         ...     ),
         ... ]
-        >>> messages = convert_to_ragas_messages(events)
+        >>> messages = convert_to_isaivam_messages(events)
         >>> len(messages)
         2  # AI message + Tool result message
 
@@ -834,7 +834,7 @@ def convert_messages_snapshot(
 
     See Also
     --------
-    convert_to_ragas_messages : Convert streaming event sequences
+    convert_to_isaivam_messages : Convert streaming event sequences
     """
     collector = AGUIEventCollector(metadata=metadata)
 
@@ -1086,7 +1086,7 @@ def extract_response(
     Parameters
     ----------
     messages : List[Message]
-        List of Isaivam messages (typically from convert_to_ragas_messages).
+        List of Isaivam messages (typically from convert_to_isaivam_messages).
 
     Returns
     -------
@@ -1096,7 +1096,7 @@ def extract_response(
 
     Example
     -------
-    >>> messages = convert_to_ragas_messages(events)
+    >>> messages = convert_to_isaivam_messages(events)
     >>> response = extract_response(messages)
     """
     return "".join(
@@ -1113,7 +1113,7 @@ def extract_tool_calls(
     Parameters
     ----------
     messages : List[Message]
-        List of Isaivam messages (typically from convert_to_ragas_messages).
+        List of Isaivam messages (typically from convert_to_isaivam_messages).
 
     Returns
     -------
@@ -1122,7 +1122,7 @@ def extract_tool_calls(
 
     Example
     -------
-    >>> messages = convert_to_ragas_messages(events)
+    >>> messages = convert_to_isaivam_messages(events)
     >>> tool_calls = extract_tool_calls(messages)
     """
     tool_calls: List[ToolCall] = []
@@ -1141,7 +1141,7 @@ def extract_contexts(
     Parameters
     ----------
     messages : List[Message]
-        List of Isaivam messages (typically from convert_to_ragas_messages).
+        List of Isaivam messages (typically from convert_to_isaivam_messages).
 
     Returns
     -------
@@ -1150,7 +1150,7 @@ def extract_contexts(
 
     Example
     -------
-    >>> messages = convert_to_ragas_messages(events)
+    >>> messages = convert_to_isaivam_messages(events)
     >>> contexts = extract_contexts(messages)
     """
     return [m.content for m in messages if isinstance(m, ToolMessage) and m.content]
@@ -1181,7 +1181,7 @@ def build_sample(
     user_input : str or List[Message]
         The original user input - either a string or conversation list.
     messages : List[Message]
-        Agent response messages from convert_to_ragas_messages().
+        Agent response messages from convert_to_isaivam_messages().
     reference : str, optional
         Reference/expected answer for evaluation.
     reference_tool_calls : str or List[ToolCall], optional
@@ -1341,7 +1341,7 @@ async def run_ag_ui_row(
     See Also
     --------
     call_ag_ui_endpoint : Lower-level endpoint caller (returns raw events)
-    convert_to_ragas_messages : Convert events to messages
+    convert_to_isaivam_messages : Convert events to messages
     build_sample : Build SingleTurnSample or MultiTurnSample for metrics
     """
     user_input = row.get("user_input")
@@ -1367,7 +1367,7 @@ async def run_ag_ui_row(
         )
 
         # Convert events to Isaivam messages
-        messages = convert_to_ragas_messages(events, metadata=metadata)
+        messages = convert_to_isaivam_messages(events, metadata=metadata)
 
         # Extract response, tool calls, and contexts
         return {

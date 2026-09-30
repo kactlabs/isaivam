@@ -15,7 +15,7 @@ from isaivam._analytics import EvaluationEvent, _analytics_batcher
 from isaivam.async_utils import apply_nest_asyncio, run
 from isaivam.callbacks import ChainType, new_group
 from isaivam.dataset_schema import MetricAnnotation, MultiTurnSample, SingleTurnSample
-from isaivam.llms import BaseRagasLLM
+from isaivam.llms import BaseIsaivamLLM
 from isaivam.losses import BinaryMetricLoss, MSELoss
 from isaivam.metrics.validators import AllowedValuesType
 from isaivam.prompt import FewShotPydanticPrompt, PromptMixin
@@ -28,12 +28,12 @@ if t.TYPE_CHECKING:
 
     from isaivam.config import DemonstrationConfig, InstructionConfig
     from isaivam.dataset import Dataset
-    from isaivam.embeddings import BaseRagasEmbedding, BaseRagasEmbeddings
+    from isaivam.embeddings import BaseIsaivamEmbedding, BaseIsaivamEmbeddings
     from isaivam.metrics.result import MetricResult
     from isaivam.prompt.simple_prompt import Prompt
 
     # Type alias for embedding model parameters (union of old and new embedding interfaces)
-    EmbeddingModelType = t.Union[BaseRagasEmbedding, BaseRagasEmbeddings]
+    EmbeddingModelType = t.Union[BaseIsaivamEmbedding, BaseIsaivamEmbeddings]
 
 logger = logging.getLogger(__name__)
 
@@ -158,12 +158,12 @@ class MetricWithLLM(Metric, PromptMixin):
 
     Attributes
     ----------
-    llm : Optional[BaseRagasLLM]
-        The language model used for the metric. Both BaseRagasLLM and InstructorBaseRagasLLM
+    llm : Optional[BaseIsaivamLLM]
+        The language model used for the metric. Both BaseIsaivamLLM and InstructorBaseIsaivamLLM
         are accepted at runtime via duck typing (both have compatible methods).
     """
 
-    llm: t.Optional[BaseRagasLLM] = None
+    llm: t.Optional[BaseIsaivamLLM] = None
     output_type: t.Optional[MetricOutputType] = None
 
     def init(self, run_config: RunConfig) -> None:
@@ -184,8 +184,8 @@ class MetricWithLLM(Metric, PromptMixin):
             raise ValueError(
                 f"Metric '{self.name}' has no valid LLM provided (self.llm is None). Please instantiate the metric with an LLM to run."
             )
-        # Only BaseRagasLLM has set_run_config method, not InstructorBaseRagasLLM
-        if isinstance(self.llm, BaseRagasLLM):
+        # Only BaseIsaivamLLM has set_run_config method, not InstructorBaseIsaivamLLM
+        if isinstance(self.llm, BaseIsaivamLLM):
             self.llm.set_run_config(run_config)
 
     def _optimize_instruction(
@@ -377,14 +377,14 @@ class MetricWithLLM(Metric, PromptMixin):
 
 @dataclass
 class MetricWithEmbeddings(Metric):
-    embeddings: t.Optional[t.Union[BaseRagasEmbeddings, BaseRagasEmbedding]] = None
+    embeddings: t.Optional[t.Union[BaseIsaivamEmbeddings, BaseIsaivamEmbedding]] = None
 
     def init(self, run_config: RunConfig):
         if self.embeddings is None:
             raise ValueError(
                 f"Metric '{self.name}' has no valid embeddings provided (self.embeddings is None). Please initantiate a the metric with an embeddings to run."  # noqa
             )
-        # Only legacy BaseRagasEmbeddings has set_run_config method
+        # Only legacy BaseIsaivamEmbeddings has set_run_config method
         if hasattr(self.embeddings, "set_run_config"):
             self.embeddings.set_run_config(run_config)  # type: ignore[attr-defined]
 
@@ -838,7 +838,7 @@ def create_auto_response_model(name: str, **fields) -> t.Type["BaseModel"]:
     from pydantic import create_model
 
     model = create_model(name, **fields)
-    setattr(model, "__ragas_auto_generated__", True)  # type: ignore[attr-defined]
+    setattr(model, "__isaivam_auto_generated__", True)  # type: ignore[attr-defined]
     return model
 
 
@@ -980,7 +980,7 @@ class SimpleLLMMetric(SimpleBaseMetric):
 
         if hasattr(self, "_response_model") and self._response_model:
             # Only warn for custom response models, not auto-generated ones
-            if not getattr(self._response_model, "__ragas_auto_generated__", False):
+            if not getattr(self._response_model, "__isaivam_auto_generated__", False):
                 warning_messages.append(
                     "- Custom response_model will be lost (set it manually after loading)"
                 )
@@ -1286,7 +1286,7 @@ class SimpleLLMMetric(SimpleBaseMetric):
         self,
         dataset: "Dataset",
         embedding_model: "EmbeddingModelType",
-        llm: "BaseRagasLLM",
+        llm: "BaseIsaivamLLM",
         test_size: float = 0.2,
         random_state: int = 42,
         **kwargs: t.Dict[str, t.Any],
@@ -1342,10 +1342,10 @@ class SimpleLLMMetric(SimpleBaseMetric):
             if isinstance(similarity_threshold_val, (int, float, str))
             else 0.7
         )
-        # Convert BaseRagasEmbeddings to BaseRagasEmbedding if needed
+        # Convert BaseIsaivamEmbeddings to BaseIsaivamEmbedding if needed
         if hasattr(embedding_model, "embed_query"):
-            # For legacy BaseRagasEmbeddings, we need to wrap it
-            # Create a wrapper that implements BaseRagasEmbedding interface
+            # For legacy BaseIsaivamEmbeddings, we need to wrap it
+            # Create a wrapper that implements BaseIsaivamEmbedding interface
             class EmbeddingWrapper:
                 def __init__(self, legacy_embedding):
                     self.legacy_embedding = legacy_embedding
@@ -1358,7 +1358,7 @@ class SimpleLLMMetric(SimpleBaseMetric):
 
             actual_embedding_model = EmbeddingWrapper(embedding_model)
         else:
-            # Already BaseRagasEmbedding
+            # Already BaseIsaivamEmbedding
             actual_embedding_model = embedding_model
 
         from isaivam.prompt.dynamic_few_shot import DynamicFewShotPrompt
@@ -1394,7 +1394,7 @@ class SimpleLLMMetric(SimpleBaseMetric):
 
     def validate_alignment(
         self,
-        llm: "BaseRagasLLM",
+        llm: "BaseIsaivamLLM",
         test_dataset: "Dataset",
         mapping: t.Dict[str, str] = {},
     ):

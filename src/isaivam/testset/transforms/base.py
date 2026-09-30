@@ -3,13 +3,13 @@ import typing as t
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
-from isaivam.llms import BaseRagasLLM, llm_factory
+from isaivam.llms import BaseIsaivamLLM, llm_factory
 from isaivam.prompt import PromptMixin
 from isaivam.testset.graph import KnowledgeGraph, Node, Relationship
 from isaivam.tokenizers import DEFAULT_TOKENIZER, BaseTokenizer
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +18,10 @@ def default_filter(node: Node) -> bool:
     return True
 
 
-def _default_llm_factory() -> t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"]:
+def _default_llm_factory() -> t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"]:
     """Create a default LLM instance with OpenAI gpt-4o-mini.
 
-    Returns InstructorBaseRagasLLM instance which satisfies BaseRagasLLM interface.
+    Returns InstructorBaseIsaivamLLM instance which satisfies BaseIsaivamLLM interface.
     """
     from openai import OpenAI
 
@@ -217,7 +217,7 @@ class Extractor(BaseGraphTransformation):
 
 @dataclass
 class LLMBasedExtractor(Extractor, PromptMixin):
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"] = field(
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"] = field(
         default_factory=_default_llm_factory
     )
     merge_if_possible: bool = True
@@ -432,6 +432,6 @@ class NodeFilter(BaseGraphTransformation):
 
 @dataclass
 class LLMBasedNodeFilter(NodeFilter, PromptMixin):
-    llm: t.Union[BaseRagasLLM, "InstructorBaseRagasLLM"] = field(
+    llm: t.Union[BaseIsaivamLLM, "InstructorBaseIsaivamLLM"] = field(
         default_factory=_default_llm_factory
     )

@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
-from isaivam.embeddings.base import BaseRagasEmbedding as BaseEmbedding
+from isaivam.embeddings.base import BaseIsaivamEmbedding as BaseEmbedding
 
 from .simple_prompt import Prompt
 

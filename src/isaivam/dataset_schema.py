@@ -180,11 +180,11 @@ class MultiTurnSample(BaseSample):
 
 
 Sample = t.TypeVar("Sample", bound=BaseSample)
-T = t.TypeVar("T", bound="RagasDataset")
+T = t.TypeVar("T", bound="IsaivamDataset")
 
 
 @dataclass
-class RagasDataset(ABC, t.Generic[Sample]):
+class IsaivamDataset(ABC, t.Generic[Sample]):
     samples: t.List[Sample]
 
     def __post_init__(self):
@@ -198,7 +198,7 @@ class RagasDataset(ABC, t.Generic[Sample]):
     @classmethod
     @abstractmethod
     def from_list(cls: t.Type[T], data: t.List[t.Dict]) -> T:
-        """Creates an RagasDataset from a list of dictionaries."""
+        """Creates an IsaivamDataset from a list of dictionaries."""
         pass
 
     def validate_samples(self, samples: t.List[Sample]) -> t.List[Sample]:
@@ -315,7 +315,7 @@ SingleTurnSampleOrMultiTurnSample = t.Union[SingleTurnSample, MultiTurnSample]
 
 
 @dataclass
-class EvaluationDataset(RagasDataset[SingleTurnSampleOrMultiTurnSample]):
+class EvaluationDataset(IsaivamDataset[SingleTurnSampleOrMultiTurnSample]):
     """
     Represents a dataset of evaluation samples.
 
@@ -430,7 +430,7 @@ class EvaluationResult:
     binary_columns: t.List[str] = field(default_factory=list)
     cost_cb: t.Optional[CostCallbackHandler] = None
     traces: t.List[t.Dict[str, t.Any]] = field(default_factory=list)
-    ragas_traces: t.Dict[str, ChainRun] = field(default_factory=dict, repr=False)
+    isaivam_traces: t.Dict[str, ChainRun] = field(default_factory=dict, repr=False)
     run_id: t.Optional[UUID] = None
 
     def __post_init__(self):
@@ -450,7 +450,7 @@ class EvaluationResult:
 
         # parse the traces
         run_id = str(self.run_id) if self.run_id is not None else None
-        self.traces = parse_run_traces(self.ragas_traces, run_id)
+        self.traces = parse_run_traces(self.isaivam_traces, run_id)
 
     def __repr__(self) -> str:
         score_strs = [f"'{k}': {v:0.4f}" for k, v in self._repr_dict.items()]

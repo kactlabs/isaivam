@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from langchain_core.callbacks import Callbacks
 
 from isaivam.dataset_schema import SingleMetricAnnotation
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 from isaivam.losses import Loss
 from isaivam.metrics.base import MetricWithLLM
 from isaivam.run_config import RunConfig
@@ -18,7 +18,7 @@ class Optimizer(ABC):
     """
 
     metric: t.Optional[MetricWithLLM] = None
-    llm: t.Optional[BaseRagasLLM] = None
+    llm: t.Optional[BaseIsaivamLLM] = None
 
     @abstractmethod
     def optimize(

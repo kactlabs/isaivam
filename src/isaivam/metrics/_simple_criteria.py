@@ -19,7 +19,7 @@ from isaivam.prompt import PydanticPrompt
 if t.TYPE_CHECKING:
     from langchain_core.callbacks.base import Callbacks
 
-    from isaivam.llms import BaseRagasLLM
+    from isaivam.llms import BaseIsaivamLLM
 
 
 logger = logging.getLogger(__name__)
@@ -91,7 +91,7 @@ class SimpleCriteriaScore(MetricWithLLM, SingleTurnMetric, MultiTurnMetric):
         self,
         name: str,
         definition: str,
-        llm: t.Optional[BaseRagasLLM] = None,
+        llm: t.Optional[BaseIsaivamLLM] = None,
         required_columns: t.Optional[t.Dict[MetricType, t.Set[str]]] = None,
         output_type: t.Optional[MetricOutputType] = MetricOutputType.DISCRETE,
         single_turn_prompt: t.Optional[PydanticPrompt] = None,

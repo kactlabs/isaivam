@@ -5,7 +5,7 @@ from langchain_core.outputs import Generation, LLMResult
 from langchain_core.prompt_values import PromptValue
 
 from isaivam.cache import CacheInterface
-from isaivam.llms import BaseRagasLLM
+from isaivam.llms import BaseIsaivamLLM
 from isaivam.run_config import RunConfig
 
 if t.TYPE_CHECKING:
@@ -19,7 +19,7 @@ if t.TYPE_CHECKING:
     from haystack.components.generators.openai import OpenAIGenerator
 
 
-class HaystackLLMWrapper(BaseRagasLLM):
+class HaystackLLMWrapper(BaseIsaivamLLM):
     """
     A wrapper class for using Haystack LLM generators within the Isaivam framework.
 

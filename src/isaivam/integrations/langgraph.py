@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, Tool
 import isaivam.messages as r
 
 
-def convert_to_ragas_messages(
+def convert_to_isaivam_messages(
     messages: List[Union[HumanMessage, SystemMessage, AIMessage, ToolMessage]],
     metadata: bool = False,
 ) -> List[Union[r.HumanMessage, r.AIMessage, r.ToolMessage]]:

@@ -22,7 +22,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class TopicAdherence(BaseMetric):
@@ -70,11 +70,11 @@ class TopicAdherence(BaseMetric):
         name: The metric name
     """
 
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         mode: Literal["precision", "recall", "f1"] = "f1",
         name: str = "topic_adherence",
         **kwargs,

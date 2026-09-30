@@ -11,7 +11,7 @@ from langchain_core.language_models import BaseLanguageModel as LangchainLLM
 from tqdm.auto import tqdm
 
 from isaivam._analytics import track_was_completed  # type: ignore
-from isaivam.callbacks import ChainType, RagasTracer, new_group
+from isaivam.callbacks import ChainType, IsaivamTracer, new_group
 from isaivam.dataset_schema import (
     EvaluationDataset,
     EvaluationResult,
@@ -19,8 +19,8 @@ from isaivam.dataset_schema import (
     SingleTurnSample,
 )
 from isaivam.embeddings.base import (
-    BaseRagasEmbedding,
-    BaseRagasEmbeddings,
+    BaseIsaivamEmbedding,
+    BaseIsaivamEmbeddings,
     LangchainEmbeddingsWrapper,
     _infer_embedding_provider_from_llm,
     embedding_factory,
@@ -29,7 +29,7 @@ from isaivam.exceptions import ExceptionInRunner
 from isaivam.executor import Executor
 from isaivam.integrations.helicone import helicone_config
 from isaivam.llms import llm_factory
-from isaivam.llms.base import BaseRagasLLM, InstructorBaseRagasLLM, LangchainLLMWrapper
+from isaivam.llms.base import BaseIsaivamLLM, InstructorBaseIsaivamLLM, LangchainLLMWrapper
 from isaivam.metrics._answer_correctness import AnswerCorrectness
 from isaivam.metrics._aspect_critic import AspectCritic
 from isaivam.metrics.base import (
@@ -53,15 +53,15 @@ if t.TYPE_CHECKING:
 
     from isaivam.cost import CostCallbackHandler, TokenUsageParser
 
-RAGAS_EVALUATION_CHAIN_NAME = "isaivam evaluation"
+ISAIVAM_EVALUATION_CHAIN_NAME = "isaivam evaluation"
 
 
 async def aevaluate(
     dataset: t.Union[Dataset, EvaluationDataset],
     metrics: t.Optional[t.Sequence[Metric]] = None,
-    llm: t.Optional[BaseRagasLLM | InstructorBaseRagasLLM | LangchainLLM] = None,
+    llm: t.Optional[BaseIsaivamLLM | InstructorBaseIsaivamLLM | LangchainLLM] = None,
     embeddings: t.Optional[
-        BaseRagasEmbeddings | BaseRagasEmbedding | LangchainEmbeddings
+        BaseIsaivamEmbeddings | BaseIsaivamEmbedding | LangchainEmbeddings
     ] = None,
     experiment_name: t.Optional[str] = None,
     callbacks: Callbacks = None,
@@ -177,7 +177,7 @@ async def aevaluate(
 
                 client = OpenAI()
                 llm = llm_factory("gpt-4o-mini", client=client)
-            metric.llm = t.cast(t.Optional[BaseRagasLLM], llm)
+            metric.llm = t.cast(t.Optional[BaseIsaivamLLM], llm)
             llm_changed.append(i)
         if isinstance(metric, MetricWithEmbeddings) and metric.embeddings is None:
             if embeddings is None:
@@ -211,21 +211,21 @@ async def aevaluate(
 
     # Isaivam Callbacks
     # init the callbacks we need for various tasks
-    ragas_callbacks: t.Dict[str, BaseCallbackHandler] = {}
+    isaivam_callbacks: t.Dict[str, BaseCallbackHandler] = {}
 
     # Isaivam Tracer which traces the run
-    tracer = RagasTracer()
-    ragas_callbacks["tracer"] = tracer
+    tracer = IsaivamTracer()
+    isaivam_callbacks["tracer"] = tracer
 
     # check if cost needs to be calculated
     if token_usage_parser is not None:
         from isaivam.cost import CostCallbackHandler
 
         cost_cb = CostCallbackHandler(token_usage_parser=token_usage_parser)
-        ragas_callbacks["cost_cb"] = cost_cb
+        isaivam_callbacks["cost_cb"] = cost_cb
 
-    # append all the ragas_callbacks to the callbacks
-    for cb in ragas_callbacks.values():
+    # append all the isaivam_callbacks to the callbacks
+    for cb in isaivam_callbacks.values():
         if isinstance(callbacks, BaseCallbackManager):
             callbacks.add_handler(cb)
         else:
@@ -234,7 +234,7 @@ async def aevaluate(
     # new evaluation chain
     row_run_managers = []
     evaluation_rm, evaluation_group_cm = new_group(
-        name=experiment_name or RAGAS_EVALUATION_CHAIN_NAME,
+        name=experiment_name or ISAIVAM_EVALUATION_CHAIN_NAME,
         inputs={},
         callbacks=callbacks,
         metadata={"type": ChainType.EVALUATION},
@@ -312,7 +312,7 @@ async def aevaluate(
     else:
         # evalution run was successful
         # now lets process the results
-        cost_cb = ragas_callbacks["cost_cb"] if "cost_cb" in ragas_callbacks else None
+        cost_cb = isaivam_callbacks["cost_cb"] if "cost_cb" in isaivam_callbacks else None
         result = EvaluationResult(
             scores=scores,
             dataset=dataset,
@@ -321,7 +321,7 @@ async def aevaluate(
                 t.Union["CostCallbackHandler", None],
                 cost_cb,
             ),
-            ragas_traces=tracer.traces,
+            isaivam_traces=tracer.traces,
             run_id=_run_id,
         )
         if not evaluation_group_cm.ended:
@@ -349,9 +349,9 @@ async def aevaluate(
 def evaluate(
     dataset: t.Union[Dataset, EvaluationDataset],
     metrics: t.Optional[t.Sequence[Metric]] = None,
-    llm: t.Optional[BaseRagasLLM | LangchainLLM] = None,
+    llm: t.Optional[BaseIsaivamLLM | LangchainLLM] = None,
     embeddings: t.Optional[
-        BaseRagasEmbeddings | BaseRagasEmbedding | LangchainEmbeddings
+        BaseIsaivamEmbeddings | BaseIsaivamEmbedding | LangchainEmbeddings
     ] = None,
     experiment_name: t.Optional[str] = None,
     callbacks: Callbacks = None,
@@ -376,12 +376,12 @@ def evaluate(
     metrics : list[Metric], optional
         List of metrics to use for evaluation. If not provided, isaivam will run
         the evaluation on the best set of metrics to give a complete view.
-    llm : BaseRagasLLM, optional
+    llm : BaseIsaivamLLM, optional
         The language model (LLM) to use to generate the score for calculating the metrics.
         If not provided, isaivam will use the default
         language model for metrics that require an LLM. This can be overridden by the LLM
         specified in the metric level with `metric.llm`.
-    embeddings : BaseRagasEmbeddings, optional
+    embeddings : BaseIsaivamEmbeddings, optional
         The embeddings model to use for the metrics.
         If not provided, isaivam will use the default embeddings for metrics that require embeddings.
         This can be overridden by the embeddings specified in the metric level with `metric.embeddings`.

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-class RagasException(Exception):
+class IsaivamException(Exception):
     """
     Base exception class for isaivam.
     """
@@ -11,7 +11,7 @@ class RagasException(Exception):
         super().__init__(message)
 
 
-class ExceptionInRunner(RagasException):
+class ExceptionInRunner(IsaivamException):
     """
     Exception raised when an exception is raised in the executor.
     """
@@ -21,7 +21,7 @@ class ExceptionInRunner(RagasException):
         super().__init__(msg)
 
 
-class RagasOutputParserException(RagasException):
+class IsaivamOutputParserException(IsaivamException):
     """
     Exception raised when the output parser fails to parse the output.
     """
@@ -31,7 +31,7 @@ class RagasOutputParserException(RagasException):
         super().__init__(msg)
 
 
-class LLMDidNotFinishException(RagasException):
+class LLMDidNotFinishException(IsaivamException):
     """
     Exception raised when the LLM did not finish.
     """
@@ -42,25 +42,25 @@ class LLMDidNotFinishException(RagasException):
 
 
 # Exceptions migrated from experimental module
-class RagasError(Exception):
+class IsaivamError(Exception):
     """Base class for all Isaivam-related exceptions."""
 
     pass
 
 
-class ValidationError(RagasError):
+class ValidationError(IsaivamError):
     """Raised when field validation fails."""
 
     pass
 
 
-class DuplicateError(RagasError):
+class DuplicateError(IsaivamError):
     """Exception raised when a duplicate resource is created."""
 
     pass
 
 
-class NotFoundError(RagasError):
+class NotFoundError(IsaivamError):
     """Exception raised when a resource is not found."""
 
     pass
@@ -90,7 +90,7 @@ class ExperimentNotFoundError(ResourceNotFoundError):
     pass
 
 
-class DuplicateResourceError(RagasError):
+class DuplicateResourceError(IsaivamError):
     """Exception raised when multiple resources exist with the same identifier."""
 
     pass

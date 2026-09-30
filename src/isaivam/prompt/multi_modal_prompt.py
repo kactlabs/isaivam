@@ -20,17 +20,17 @@ from pydantic import BaseModel
 from typing_extensions import TypedDict
 
 from isaivam.callbacks import ChainType, new_group
-from isaivam.exceptions import RagasOutputParserException
+from isaivam.exceptions import IsaivamOutputParserException
 from isaivam.prompt.pydantic_prompt import (
     PydanticPrompt,
-    RagasOutputParser,
+    IsaivamOutputParser,
     is_langchain_llm,
 )
 
 if t.TYPE_CHECKING:
     from langchain_core.callbacks import Callbacks
 
-from isaivam.llms.base import BaseRagasLLM
+from isaivam.llms.base import BaseIsaivamLLM
 
 # type variables for input and output models
 InputModel = t.TypeVar("InputModel", bound=BaseModel)
@@ -121,7 +121,7 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
 
     async def generate_multiple(
         self,
-        llm: t.Union[BaseRagasLLM, BaseLanguageModel],
+        llm: t.Union[BaseIsaivamLLM, BaseLanguageModel],
         data: InputModel,
         n: int = 1,
         temperature: t.Optional[float] = None,
@@ -134,7 +134,7 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
 
         Parameters
         ----------
-        llm : BaseRagasLLM
+        llm : BaseIsaivamLLM
             The language model to use for generation.
         data : InputModel
             The input data for generation.
@@ -154,7 +154,7 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
 
         Raises
         ------
-        RagasOutputParserException
+        IsaivamOutputParserException
             If there's an error parsing the output.
         """
         callbacks = callbacks or []
@@ -163,7 +163,7 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
             name=self.name,
             inputs={"data": processed_data},
             callbacks=callbacks,
-            metadata={"type": ChainType.RAGAS_PROMPT},
+            metadata={"type": ChainType.ISAIVAM_PROMPT},
         )
         prompt_value = self.to_prompt_value(processed_data)
 
@@ -180,8 +180,8 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
             )
         else:
             # This is a Isaivam LLM - use generate()
-            ragas_llm = t.cast(BaseRagasLLM, llm)
-            resp = await ragas_llm.generate(
+            isaivam_llm = t.cast(BaseIsaivamLLM, llm)
+            resp = await isaivam_llm.generate(
                 prompt_value,
                 n=n,
                 temperature=temperature,
@@ -190,26 +190,26 @@ class ImageTextPrompt(PydanticPrompt, t.Generic[InputModel, OutputModel]):
             )
 
         output_models = []
-        parser = RagasOutputParser(pydantic_object=self.output_model)  # type: ignore
+        parser = IsaivamOutputParser(pydantic_object=self.output_model)  # type: ignore
         for i in range(n):
             output_string = resp.generations[0][i].text
             try:
-                # For the parser, we need a BaseRagasLLM, so if it's a LangChain LLM, we need to handle this
+                # For the parser, we need a BaseIsaivamLLM, so if it's a LangChain LLM, we need to handle this
                 if is_langchain_llm(llm):
-                    # Skip parsing retry for LangChain LLMs since parser expects BaseRagasLLM
+                    # Skip parsing retry for LangChain LLMs since parser expects BaseIsaivamLLM
                     answer = self.output_model.model_validate_json(output_string)
                 else:
-                    ragas_llm = t.cast(BaseRagasLLM, llm)
+                    isaivam_llm = t.cast(BaseIsaivamLLM, llm)
                     answer = await parser.parse_output_string(
                         output_string=output_string,
                         prompt_value=prompt_value,  # type: ignore
-                        llm=ragas_llm,
+                        llm=isaivam_llm,
                         callbacks=prompt_cb,
                         retries_left=retries_left,
                     )
                 processed_output = self.process_output(answer, data)  # type: ignore
                 output_models.append(processed_output)
-            except RagasOutputParserException as e:
+            except IsaivamOutputParserException as e:
                 prompt_rm.on_chain_error(error=e)
                 logger.error("Prompt %s failed to parse output: %s", self.name, e)
                 raise e

@@ -19,7 +19,7 @@ from .util import (
 )
 
 if t.TYPE_CHECKING:
-    from isaivam.llms.base import InstructorBaseRagasLLM
+    from isaivam.llms.base import InstructorBaseIsaivamLLM
 
 
 class FactualCorrectness(BaseMetric):
@@ -70,11 +70,11 @@ class FactualCorrectness(BaseMetric):
     """
 
     # Type hints for linter (attributes are set in __init__)
-    llm: "InstructorBaseRagasLLM"
+    llm: "InstructorBaseIsaivamLLM"
 
     def __init__(
         self,
-        llm: "InstructorBaseRagasLLM",
+        llm: "InstructorBaseIsaivamLLM",
         mode: t.Literal["precision", "recall", "f1"] = "f1",
         beta: float = 1.0,
         atomicity: t.Literal["low", "high"] = "low",
