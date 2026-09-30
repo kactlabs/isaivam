@@ -1,0 +1,23 @@
+# Core dependencies
+numpy>=1.21.0,<3.0.0
+datasets>=4.0.0
+tiktoken
+pydantic>=2.0.0
+nest-asyncio
+appdirs
+diskcache>=5.6.3
+typer
+rich
+openai>=1.0.0
+tqdm
+instructor
+pillow>=10.4.0
+networkx
+scikit-network
+requests
+
+# LangChain ecosystem
+langchain
+langchain-core
+langchain-community
+langchain_openai
